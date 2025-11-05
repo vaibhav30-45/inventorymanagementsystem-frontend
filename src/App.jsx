@@ -3,6 +3,7 @@ import './App.css'
 import Dashboard from './components/Dashboard'
 import Inventory from './components/Inventory'
 import LoginForm from './components/LoginForm'
+import Sales from './components/Sales'
 
 function App() {
   return (
