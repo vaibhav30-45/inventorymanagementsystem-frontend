@@ -1,0 +1,20 @@
+.main-container{
+    height: 100vh;
+    display: flex;
+    background-color: white;
+}
+
+.left-div{
+    width: 15vw;
+    height: 95vh;
+    background-color: rgb(93, 108, 170);
+    margin: 12px;
+    box-sizing: border-box;
+    border-radius: 6px;
+}
+
+.right-div{
+    width: 83vw;
+    color: black;
+    overflow: scroll;
+}
