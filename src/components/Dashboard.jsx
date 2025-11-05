@@ -5,6 +5,7 @@ import LeftContent from './LeftContent'
 import '../styles/Dashboard.css'
 import LoginForm from './LoginForm'
 import Inventory from './Inventory'
+import Sales from './Sales'
 
 const Dashboard = () => {
   return (
@@ -17,6 +18,7 @@ const Dashboard = () => {
           <Route path='/' element={<MainContent/>} />
           <Route path='/login' element={<LoginForm/>} />
           <Route path='/inventory' element={<Inventory/>} />
+          <Route path='/sales' element={<Sales/>}/>
         </Routes>
     </div>
     </div>
