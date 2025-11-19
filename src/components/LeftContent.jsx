@@ -9,6 +9,7 @@ const LeftContent = () => {
       <button onClick={() => navigate('/login')}>Login</button>
       <button onClick={() => navigate('/inventory')}>Inventory</button>
       <button onClick={() => navigate('/sales')}>Sales</button>
+      <button onClick={() => navigate('/customer')}>customer</button>
     </div>
   )
 }

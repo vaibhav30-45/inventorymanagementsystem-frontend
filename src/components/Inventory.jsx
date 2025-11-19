@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../styles/Inventory.css"; // keep or remove, no design dependency
 
-const API_BASE = "http://localhost:5000/api/products";
-const token = localStorage.getItem("authToken") || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MDMxNjI1NzAwMGY3MmEyN2Q0OWJkYiIsInJvbGUiOiJzdXBlcmFkbWluIiwiaWF0IjoxNzYyMjU5MjY2LCJleHAiOjE3NjIzNDU2NjZ9.-cviNp1pArWaUHIeAciwG9jToVJpxTRJ03AwDyrNx8Q"; // or hardcode token for testing
+const API_BASE = "http://10.223.3.143:5000/api/products";
+const token = localStorage.getItem("authToken") || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MDMxNjI1NzAwMGY3MmEyN2Q0OWJkYiIsInJvbGUiOiJzdXBlcmFkbWluIiwiaWF0IjoxNzYzNTU0MTgzLCJleHAiOjE3NjM2NDA1ODN9.jwkjhiLnRqf3I0kiXzYIHFFcBNWPx43Yk6VeewHqkHc"; // or hardcode token for testing
 
 export default function Inventory() {
   const [allProducts, setAllProducts] = useState([]); // full list from backend
