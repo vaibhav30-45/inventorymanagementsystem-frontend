@@ -6,6 +6,7 @@ import '../styles/Dashboard.css'
 import LoginForm from './LoginForm'
 import Inventory from './Inventory'
 import Sales from './Sales'
+import Customer from './Customer'
 
 const Dashboard = () => {
   return (
@@ -19,6 +20,7 @@ const Dashboard = () => {
           <Route path='/login' element={<LoginForm/>} />
           <Route path='/inventory' element={<Inventory/>} />
           <Route path='/sales' element={<Sales/>}/>
+          <Route path='/customer' element={<Customer/>}/>
         </Routes>
     </div>
     </div>
