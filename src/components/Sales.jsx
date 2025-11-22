@@ -5,13 +5,13 @@ const TABLE_HEADER_BG = "#1976d2";
 const TABLE_BORDER = "#1565c0";
 const ROW_ALT_BG = "#f5faff";
 
-const Bearer_Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MDMxNjI1NzAwMGY3MmEyN2Q0OWJkYiIsInJvbGUiOiJzdXBlcmFkbWluIiwiaWF0IjoxNzYyMzQ0NjQ2LCJleHAiOjE3NjI0MzEwNDZ9.QYehCqjMHDFBgEcJBtMnEKc50JreZTZG5FhA3z3uzRQ";
+const Bearer_Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MDMxNjI1NzAwMGY3MmEyN2Q0OWJkYiIsInJvbGUiOiJzdXBlcmFkbWluIiwiaWF0IjoxNzYzNzk4NTQyLCJleHAiOjE3NjM4ODQ5NDJ9.2pEp3GT5zvSVBW7c-Ua3pvp70CWTxodb9OVX9l0L-dY";
 function Sales() {
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-      fetch("http://10.128.177.143:5000/api/sales", {
+      fetch("http://172.28.253.143:5000/api/sales", {
       headers: {
         Authorization: `Bearer ${Bearer_Token}`,
         "Content-Type": "application/json"
