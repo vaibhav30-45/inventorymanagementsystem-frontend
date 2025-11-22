@@ -1,6 +1,6 @@
-/* === Container & Headings === */
+
 .inventory-container {
-  padding: 40px;
+  padding: 30px;
   background: #f7faff;
   font-family: 'Poppins', sans-serif;
   color: #333;
@@ -26,7 +26,7 @@ h1 {
   font-size: 20px;
 }
 
-/* === Tables === */
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -60,7 +60,6 @@ tr:hover {
   transition: 0.2s ease-in-out;
 }
 
-/* === Search & Filter Bar === */
 .search-filter {
   display: flex;
   gap: 12px;
@@ -101,7 +100,7 @@ tr:hover {
   background-color: #004494;
 }
 
-/* === Add/Edit Form === */
+
 .product-form {
   border: 1px solid #dce4f2;
   padding: 20px;
@@ -147,7 +146,7 @@ tr:hover {
   resize: vertical;
 }
 
-/* === Buttons === */
+
 button {
   background-color: #0056b3;
   color: white;
@@ -176,7 +175,7 @@ button.cancel-btn:hover {
   background-color: #777;
 }
 
-/* === Action Buttons (Edit/Delete) === */
+
 td button {
   font-size: 13px;
   padding: 6px 10px;

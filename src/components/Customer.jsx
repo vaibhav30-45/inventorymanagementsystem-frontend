@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 
-const API_BASE = "http://10.223.3.143:5000/api/customers"; // update port/address if needed
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MDMxNjI1NzAwMGY3MmEyN2Q0OWJkYiIsInJvbGUiOiJzdXBlcmFkbWluIiwiaWF0IjoxNzYzNTU2MDQ5LCJleHAiOjE3NjM2NDI0NDl9.atWv2P-skbvPJALRew-cFq7gxzjk0MHYijhGJ_MG8kc";
+const API_BASE = "http://172.28.253.143:5000/api/customers"; // update port/address if needed
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MDMxNjI1NzAwMGY3MmEyN2Q0OWJkYiIsInJvbGUiOiJzdXBlcmFkbWluIiwiaWF0IjoxNzYzNzk4NTQyLCJleHAiOjE3NjM4ODQ5NDJ9.2pEp3GT5zvSVBW7c-Ua3pvp70CWTxodb9OVX9l0L-dY";
 
 export default function SalesRecords() {
   const [customers, setCustomers] = useState([]);
@@ -103,9 +103,9 @@ const date = formatDate(dateRaw);
 
   return (
     <div className="sales-records-container" style={{ padding: 20 }}>
-      <h2>Customer Records</h2>
+      <h2 style={{paddingBottom:20}}>Customer Records</h2>
       {loading && <p>Loading...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      
       <table
         style={{
           width: "100%",
