@@ -1,0 +1,75 @@
+/* File: Settings.css */
+
+.settings-container {
+  padding: 20px;
+  max-width: 700px;
+  margin: 0 ;
+}
+
+.settings-title {
+  font-size: 28px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.settings-card {
+  background: #fff;
+  padding: 18px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(129, 127, 127, 0.08);
+}
+
+.settings-card h3 {
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+.settings-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14px;
+}
+
+.settings-row label {
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.settings-row input,
+.settings-row select {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #000000;
+}
+
+
+.save-btn {
+  background: #3c6ef6;
+  color: white;
+  padding: 12px 22px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  display: block;
+}
+
+.save-btn:hover {
+  background: #2f57c8;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .settings-container {
+    padding: 10px;
+  }
+
+  .settings-card {
+    padding: 14px;
+  }
+}

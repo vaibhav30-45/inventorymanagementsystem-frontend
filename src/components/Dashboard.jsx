@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, Link } from 'react-router-dom';
-import { FaBars, FaTimes, FaHome, FaBox, FaDollarSign, FaUsers, FaSignOutAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaBars, FaTimes, FaHome, FaBox, FaDollarSign, FaUsers, FaSignOutAlt, FaChevronLeft, FaChevronRight, FaCog, FaShoppingCart, FaFileInvoice, FaReceipt ,FaTruck,
+  FaTools,
+  FaLeaf, } from 'react-icons/fa';
 import MainContent from './MainContent';
 import '../styles/Dashboard.css';
 import LoginForm from './LoginForm';
 import Inventory from './Inventory';
 import Sales from './Sales';
 import Customer from './Customer';
+import Product from './Product';
+import Purchasing from './Purchasing';
+import Receipt from './Receipt';
+import Settings from './Settings';
+import Hardware from "./Hardware";
+import Pesticide from "./Pesticide";
+import Suppliers from "./Suppliers";
+import Billing from './Billing';  
 
 const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -90,6 +100,60 @@ const Dashboard = () => {
               <Link to='/customers' onClick={handleMenuItemClick}>
                 <FaUsers className='nav-icon' />
                 <span className='nav-text'>Customers</span>
+                
+              </Link>
+            </li>
+            <li className={location.pathname === "/hardware" ? "active" : ""}>
+              <Link to="/hardware" onClick={handleMenuItemClick}>
+                <FaTools className="nav-icon" />
+                <span className="nav-text">Hardware</span>
+              </Link>
+            </li>
+
+            <li className={location.pathname === "/pesticide" ? "active" : ""}>
+              <Link to="/pesticide" onClick={handleMenuItemClick}>
+                <FaLeaf className="nav-icon" />
+                <span className="nav-text">Pesticide</span>
+              </Link>
+            </li>
+            <li className={location.pathname === "/suppliers" ? "active" : ""}>
+              <Link to="/suppliers" onClick={handleMenuItemClick}>
+                <FaTruck className="nav-icon" />
+                <span className="nav-text">Suppliers</span>
+              </Link>
+            </li>
+            <li className={location.pathname === "/billing" ? "active" : ""}>
+              <Link to="/billing" onClick={handleMenuItemClick}>
+                <FaDollarSign className="nav-icon" />
+                <span className="nav-text">Billing</span>
+              </Link>
+            </li>
+              <li className={location.pathname === '/product' ? 'active' : ''}>
+              <Link to='/product' onClick={handleMenuItemClick}>
+                <FaBox className='nav-icon' />
+                <span className='nav-text'>Product</span>
+                
+              </Link>
+            </li>
+              <li className={location.pathname === '/purchasing' ? 'active' : ''}>
+              <Link to='/purchasing' onClick={handleMenuItemClick}>
+                <FaShoppingCart className='nav-icon' />
+                <span className='nav-text'>Purchasing</span>
+                
+              </Link>
+            </li>
+              <li className={location.pathname === '/receipt' ? 'active' : ''}>
+              <Link to='/receipt' onClick={handleMenuItemClick}>
+                <FaReceipt className='nav-icon' />
+                <span className='nav-text'>Bill Receipt</span>
+                
+              </Link>
+            </li>
+              <li className={location.pathname === '/settings' ? 'active' : ''}>
+              <Link to='/settings' onClick={handleMenuItemClick}>
+                <FaCog className='nav-icon' />
+                <span className='nav-text'>Settings</span>
+                
               </Link>
             </li>
           </ul>
@@ -121,6 +185,15 @@ const Dashboard = () => {
             <Route path='/inventory' element={<Inventory />} />
             <Route path='/sales' element={<Sales />} />
             <Route path='/customers' element={<Customer />} />
+            <Route path='/product' element={<Product />} />
+            <Route path='/purchasing' element={<Purchasing />} />
+            <Route path='/receipt' element={<Receipt />} />
+            <Route path='/settings' element={<Settings />} />
+            <Route path="/hardware" element={<Hardware />} />
+            <Route path="/pesticide" element={<Pesticide />} />
+            <Route path="/suppliers" element={<Suppliers />} />
+            <Route path='/billing' element={<Billing />} />
+
           </Routes>
         </div>
       </main>
