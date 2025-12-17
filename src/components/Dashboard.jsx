@@ -63,6 +63,7 @@ const Dashboard = () => {
 
   return (
     <div className='dashboard-container'>
+      
       {/* Mobile Header */}
       <header className='mobile-header'>
         <button className='menu-toggle' onClick={toggleSidebar}>
@@ -196,6 +197,7 @@ const Dashboard = () => {
 
           </Routes>
         </div>
+        
       </main>
 
       {/* Overlay for mobile */}

@@ -1,0 +1,5 @@
+.landing-overlay img{
+    width: 100%;
+    height: 95vh;
+    object-fit: contain;
+}
