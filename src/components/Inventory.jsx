@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../styles/Inventory.css"; // keep or remove, no design dependency
 
 const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/products`;
-// const token = localStorage.getItem("authToken") || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MDMxNjI1NzAwMGY3MmEyN2Q0OWJkYiIsInJvbGUiOiJzdXBlcmFkbWluIiwiaWF0IjoxNzYzNzk4NTQyLCJleHAiOjE3NjM4ODQ5NDJ9.2pEp3GT5zvSVBW7c-Ua3pvp70CWTxodb9OVX9l0L-dY"; // or hardcode token for testing
+const token = localStorage.getItem("authToken") || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MDMxNjI1NzAwMGY3MmEyN2Q0OWJkYiIsInJvbGUiOiJzdXBlcmFkbWluIiwiaWF0IjoxNzYzNzk4NTQyLCJleHAiOjE3NjM4ODQ5NDJ9.2pEp3GT5zvSVBW7c-Ua3pvp70CWTxodb9OVX9l0L-dY"; // or hardcode token for testing
 
 export default function Inventory() {
   const [allProducts, setAllProducts] = useState([]); // full list from backend
@@ -262,7 +262,7 @@ export default function Inventory() {
 
 
       <div className="search-filter">
-        <input
+        <input name=""
           placeholder="Search by name, description or category..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}

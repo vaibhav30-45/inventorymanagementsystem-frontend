@@ -1,82 +1,95 @@
-import React, { useState, useEffect } from "react";
-
-const API_PRODUCTS = "http://172.28.253.143:5000/api/inventory";
-const API_SALES = "http://172.28.253.143:5000/api/sales";
-const API_CUSTOMERS = "http://172.28.253.143:5000/api/customers";
-
-const token = localStorage.getItem("authToken");
+import React, { useEffect, useState } from "react";
+import Receipt from "./Receipt";
+import "../styles/Billing.css";
+const API_PRODUCTS = "http://localhost:5000/api/products";
+const API_SALES = "http://localhost:5000/api/sales";
+const API_CUSTOMERS = "http://localhost:5000/api/customers";
 
 export default function Billing() {
-  const [productSearch, setProductSearch] = useState("");
+  const token = localStorage.getItem("token");
+
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-
-  const [cart, setCart] = useState([]);
-
   const [customers, setCustomers] = useState([]);
+
+  const [search, setSearch] = useState("");
+  const [cart, setCart] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState("");
-
   const [discount, setDiscount] = useState(0);
-  const [gstRate] = useState(18); // fixed GST
-
-  const [paymentType, setPaymentType] = useState("Cash");
+  const gstRate = 18;
+  const [paymentMethod, setPaymentMethod] = useState("Cash");
+const [showReceipt, setShowReceipt] = useState(false);
+const [billData, setBillData] = useState(null);
 
   useEffect(() => {
     loadProducts();
     loadCustomers();
   }, []);
 
+  /* ================= LOAD DATA ================= */
+
   const loadProducts = async () => {
     const res = await fetch(API_PRODUCTS, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${token}`,
+},
+
     });
     const data = await res.json();
-    setProducts(data.data || []);
-    setFilteredProducts(data.data || []);
+    setProducts(data);
+    setFilteredProducts(data);
   };
 
   const loadCustomers = async () => {
     const res = await fetch(API_CUSTOMERS, {
-      headers: { Authorization: `Bearer ${token}` },
+     headers: {
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${token}`,
+},
+
     });
     const data = await res.json();
-    setCustomers(data.data || []);
+    setCustomers(data);
   };
 
-  // Search Products
-  const handleSearchProducts = () => {
-    const key = productSearch.toLowerCase();
-    const result = products.filter(
-      (p) =>
-        p.itemName.toLowerCase().includes(key) ||
-        p.category.toLowerCase().includes(key)
+  /* ================= SEARCH ================= */
+
+  const searchProducts = () => {
+    const key = search.toLowerCase();
+    setFilteredProducts(
+      products.filter(
+        (p) =>
+          p.name.toLowerCase().includes(key) ||
+          p.category.toLowerCase().includes(key)
+      )
     );
-    setFilteredProducts(result);
   };
+
+  /* ================= CART ================= */
 
   const addToCart = (product) => {
-    const exists = cart.find((c) => c._id === product._id);
-    if (exists) {
-      alert("Item already added");
-      return;
-    }
+    if (cart.find((c) => c._id === product._id)) return;
 
     setCart([
       ...cart,
       {
         ...product,
         quantity: 1,
-        total: product.price,
+        total: product.sellingPrice,
       },
     ]);
   };
 
-  // Update Quantity
-  const updateQuantity = (id, qty) => {
+  const updateQty = (id, qty) => {
     setCart(
       cart.map((item) =>
         item._id === id
-          ? { ...item, quantity: qty, total: qty * item.price }
+          ? {
+              ...item,
+              quantity: qty,
+              total: qty * item.sellingPrice,
+            }
           : item
       )
     );
@@ -86,200 +99,179 @@ export default function Billing() {
     setCart(cart.filter((i) => i._id !== id));
   };
 
-  // Bill Summary
-  const subtotal = cart.reduce((sum, i) => sum + i.total, 0);
-  const gst = (subtotal * gstRate) / 100;
-  const discounted = subtotal - (subtotal * discount) / 100;
-  const grandTotal = discounted + gst;
+  /* ================= BILL CALC ================= */
 
-  // Save Bill
-  const saveBill = async () => {
-    if (cart.length === 0) return alert("Add items");
+  const subtotal = cart.reduce((s, i) => s + i.total, 0);
+  const discountAmt = (subtotal * discount) / 100;
+  const gst = ((subtotal - discountAmt) * gstRate) / 100;
+  const grandTotal = subtotal - discountAmt + gst;
 
-    const body = {
-      customerId: selectedCustomer,
-      items: cart.map((i) => ({
-        productId: i._id,
-        name: i.itemName,
-        price: i.price,
-        quantity: i.quantity,
-      })),
-      subtotal,
-      discount,
-      gst,
-      total: grandTotal,
-      paymentType,
-    };
+  /* ================= SAVE BILL ================= */
 
-    const res = await fetch(API_SALES, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
+  const generateBill = async () => {
+  if (!cart.length || !selectedCustomer) {
+    alert("Add items and select customer");
+    return;
+  }
+
+ const selectedCustomerObj = customers.find(
+  (c) => c._id === selectedCustomer
+);
+
+const payload = {
+  customerId: selectedCustomer,
+  customerName: selectedCustomerObj?.name || "Walk-in Customer",
+  saleType: "Billing",
+  products: cart.map((i) => ({
+    productId: i._id,
+    quantity: i.quantity,
+    price: i.sellingPrice,
+  })),
+  totalAmount: grandTotal,
+  paymentMethod,
+};
+
+
+
+  const res = await fetch(API_SALES, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (res.ok) {
+    const savedBill = await res.json();
+
+    // 👇 Prepare receipt data
+    setBillData({
+      customerName:
+        customers.find((c) => c._id === selectedCustomer)?.name || "Customer",
+      date: new Date().toLocaleString(),
+      billNo: savedBill._id || Date.now(),
+      items: payload.products,
     });
 
-    if (res.ok) {
-      alert("Invoice Generated Successfully!");
-      window.print(); 
-      setCart([]);
-    }
-  };
+    setShowReceipt(true);
+    setCart([]);
+  } else {
+    alert("Failed to generate invoice");
+  }
+};
 
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Billing System</h1>
 
-      {/* Product Search */}
-      <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-        <input
-          type="text"
-          placeholder="Search Products..."
-          value={productSearch}
-          onChange={(e) => setProductSearch(e.target.value)}
-          style={{ padding: 8, width: 250 }}
-        />
-        <button
-          onClick={handleSearchProducts}
-          style={{
-            padding: "9px 14px",
-            background: "#2196f3",
-            color: "white",
-            border: "none",
-            borderRadius: 4,
-          }}
-        >
-          Search
-        </button>
-      </div>
+  /* ================= UI ================= */
 
-      {/* Product List */}
-      <h3 style={{ marginTop: 20 }}>Available Products</h3>
-      <table style={{ width: "100%", marginTop: 10 }}>
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Add</th>
+return (
+
+  <div style={{ padding: 20 }}>
+    <h1>Billing</h1>
+
+    {/* SEARCH */}
+    <input name="search"
+      placeholder="Search products"
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+    />
+    <button onClick={searchProducts}>Search</button>
+
+    {/* PRODUCT LIST */}
+    <table width="100%">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Add</th>
+        </tr>
+      </thead>
+      <tbody>
+        {filteredProducts.map((p) => (
+          <tr key={p._id}>
+            <td>{p.name}</td>
+            <td>{p.category}</td>
+            <td>₹{p.sellingPrice}</td>
+            <td>
+              <button onClick={() => addToCart(p)}>Add</button>
+            </td>
           </tr>
-        </thead>
+        ))}
+      </tbody>
+    </table>
 
-        <tbody>
-          {filteredProducts.map((p) => (
-            <tr key={p._id}>
-              <td>{p.itemName}</td>
-              <td>{p.category}</td>
-              <td>{p.price}</td>
-              <td>
-                <button onClick={() => addToCart(p)}>Add</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Cart Table */}
-      <h2 style={{ marginTop: 30 }}>Cart Items</h2>
-      <table style={{ width: "100%", marginTop: 10 }}>
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Price</th>
-            <th>Qty</th>
-            <th>Total</th>
-            <th>Action</th>
+    {/* CART */}
+    <h3>Cart</h3>
+    <table width="100%">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Price</th>
+          <th>Qty</th>
+          <th>Total</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {cart.map((c) => (
+          <tr key={c._id}>
+            <td>{c.name}</td>
+            <td>₹{c.sellingPrice}</td>
+            <td>
+              <input
+                type="number"
+                min="1"
+                value={c.quantity}
+                onChange={(e) => updateQty(c._id, Number(e.target.value))}
+              />
+            </td>
+            <td>₹{c.total}</td>
+            <td>
+              <button onClick={() => removeItem(c._id)}>X</button>
+            </td>
           </tr>
-        </thead>
+        ))}
+      </tbody>
+    </table>
 
-        <tbody>
-          {cart.map((c) => (
-            <tr key={c._id}>
-              <td>{c.itemName}</td>
-              <td>{c.price}</td>
-              <td>
-                <input
-                  type="number"
-                  min="1"
-                  value={c.quantity}
-                  onChange={(e) => updateQuantity(c._id, Number(e.target.value))}
-                  style={{ width: 60 }}
-                />
-              </td>
-              <td>{c.total}</td>
-              <td>
-                <button onClick={() => removeItem(c._id)}>Remove</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    {/* CUSTOMER */}
+    <select onChange={(e) => setSelectedCustomer(e.target.value)}>
+      <option value="">Select Customer</option>
+      {customers.map((c) => (
+        <option key={c._id} value={c._id}>
+          {c.name}
+        </option>
+      ))}
+    </select>
 
-      {/* Customer Selection */}
-      <div style={{ marginTop: 20 }}>
-        <h3>Select Customer</h3>
-        <select
-          value={selectedCustomer}
-          onChange={(e) => setSelectedCustomer(e.target.value)}
-          style={{ padding: 8, width: 250 }}
-        >
-          <option value="">Select Customer</option>
-          {customers.map((c) => (
-            <option key={c._id} value={c._id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </div>
+    {/* SUMMARY */}
+    <p>Subtotal: ₹{subtotal}</p>
+    <p>
+      Discount (%):
+      <input
+        type="number"
+        value={discount}
+        onChange={(e) => setDiscount(Number(e.target.value))}
+      />
+    </p>
+    <p>GST ({gstRate}%): ₹{gst.toFixed(2)}</p>
+    <h2>Total: ₹{grandTotal.toFixed(2)}</h2>
 
-      {/* Bill Summary */}
-      <div style={{ marginTop: 20 }}>
-        <h3>Billing Summary</h3>
-        <p>Subtotal: ₹{subtotal}</p>
-        <p>
-          Discount (%):
-          <input
-            type="number"
-            value={discount}
-            onChange={(e) => setDiscount(Number(e.target.value))}
-            style={{ width: 80, marginLeft: 10 }}
-          />
-        </p>
-        <p>GST ({gstRate}%): ₹{gst}</p>
-        <h2>Grand Total: ₹{grandTotal}</h2>
-      </div>
+    {/* PAYMENT */}
+    <select onChange={(e) => setPaymentMethod(e.target.value)}>
+      <option>Cash</option>
+      <option>Card</option>
+      <option>Pending</option>
+    </select>
 
-      {/* Payment */}
-      <div style={{ marginTop: 20 }}>
-        <h3>Payment Method</h3>
-        <select
-          value={paymentType}
-          onChange={(e) => setPaymentType(e.target.value)}
-          style={{ padding: 8, width: 200 }}
-        >
-          <option>Cash</option>
-          <option>Card</option>
-          <option>Pending</option>
-        </select>
-      </div>
+    <br />
+    <button onClick={generateBill}>Generate Invoice</button>
 
-      {/* Generate Bill */}
-      <button
-        onClick={saveBill}
-        style={{
-          marginTop: 30,
-          background: "green",
-          color: "white",
-          padding: "12px 20px",
-          border: "none",
-          borderRadius: 6,
-          cursor: "pointer",
-          fontSize: 16,
-        }}
-      >
-        Generate Invoice
-      </button>
-    </div>
-  );
+    {showReceipt && (
+      <Receipt billData={billData} />
+    )}
+  </div>
+);
+  
 }

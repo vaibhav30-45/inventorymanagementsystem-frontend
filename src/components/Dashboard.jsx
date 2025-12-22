@@ -34,6 +34,10 @@ const Dashboard = () => {
       setIsSidebarOpen(false);
     }
   };
+  useEffect(() => {
+  // Always close sidebar after navigation (login, page change)
+  setIsSidebarOpen(false);
+}, [location.pathname]);
 
   // Update isMobile state on window resize
   useEffect(() => {
@@ -85,73 +89,73 @@ const Dashboard = () => {
                 <span className='nav-text'>Dashboard</span>
               </Link>
             </li>
-            <li className={location.pathname === '/inventory' ? 'active' : ''}>
-              <Link to='/inventory' onClick={handleMenuItemClick}>
+            <li className={location.pathname.includes("/dashboard/inventory") ? 'active' : ''}>
+              <Link to='/dashboard/inventory' onClick={handleMenuItemClick}>
                 <FaBox className='nav-icon' />
                 <span className='nav-text'>Inventory</span>
               </Link>
             </li>
-            <li className={location.pathname === '/sales' ? 'active' : ''}>
-              <Link to='/sales' onClick={handleMenuItemClick}>
+            <li className={location.pathname.includes("/dashboard/sales") ? 'active' : ''}>
+              <Link to='/dashboard/sales' onClick={handleMenuItemClick}>
                 <FaDollarSign className='nav-icon' />
                 <span className='nav-text'>Sales</span>
               </Link>
             </li>
-            <li className={location.pathname === '/customers' ? 'active' : ''}>
-              <Link to='/customers' onClick={handleMenuItemClick}>
+            <li className={location.pathname.includes("/dashboard/customers") ? 'active' : ''}>
+              <Link to='/dashboard/customers' onClick={handleMenuItemClick}>
                 <FaUsers className='nav-icon' />
                 <span className='nav-text'>Customers</span>
                 
               </Link>
             </li>
-            <li className={location.pathname === "/hardware" ? "active" : ""}>
-              <Link to="/hardware" onClick={handleMenuItemClick}>
+            <li className={location.pathname.includes("/dashboard/hardware") ? "active" : ""}>
+              <Link to="/dashboard/hardware" onClick={handleMenuItemClick}>
                 <FaTools className="nav-icon" />
                 <span className="nav-text">Hardware</span>
               </Link>
             </li>
 
-            <li className={location.pathname === "/pesticide" ? "active" : ""}>
-              <Link to="/pesticide" onClick={handleMenuItemClick}>
+            <li className={location.pathname.includes("/dashboard/pesticide") ? "active" : ""}>
+              <Link to="/dashboard/pesticide" onClick={handleMenuItemClick}>
                 <FaLeaf className="nav-icon" />
                 <span className="nav-text">Pesticide</span>
               </Link>
             </li>
-            <li className={location.pathname === "/suppliers" ? "active" : ""}>
-              <Link to="/suppliers" onClick={handleMenuItemClick}>
+            <li className={location.pathname.includes("/dashboard/suppliers") ? "active" : ""}>
+              <Link to="/dashboard/suppliers" onClick={handleMenuItemClick}>
                 <FaTruck className="nav-icon" />
                 <span className="nav-text">Suppliers</span>
               </Link>
             </li>
-            <li className={location.pathname === "/billing" ? "active" : ""}>
-              <Link to="/billing" onClick={handleMenuItemClick}>
+            <li className={location.pathname.includes("/dashboard/billing") ? "active" : ""}>
+              <Link to="/dashboard/billing" onClick={handleMenuItemClick}>
                 <FaDollarSign className="nav-icon" />
                 <span className="nav-text">Billing</span>
               </Link>
             </li>
-              <li className={location.pathname === '/product' ? 'active' : ''}>
-              <Link to='/product' onClick={handleMenuItemClick}>
+              <li className={location.pathname.includes("/dashboard/product") ? "active" : ""   }>
+              <Link to='/dashboard/product' onClick={handleMenuItemClick}>
                 <FaBox className='nav-icon' />
                 <span className='nav-text'>Product</span>
                 
               </Link>
             </li>
-              <li className={location.pathname === '/purchasing' ? 'active' : ''}>
-              <Link to='/purchasing' onClick={handleMenuItemClick}>
+              <li className={location.pathname.includes("/dashboard/purchasing") ? "active" : ""}>
+              <Link to='/dashboard/purchasing' onClick={handleMenuItemClick}>
                 <FaShoppingCart className='nav-icon' />
                 <span className='nav-text'>Purchasing</span>
                 
               </Link>
             </li>
-              <li className={location.pathname === '/receipt' ? 'active' : ''}>
+              {/* <li className={location.pathname === '/receipt' ? 'active' : ''}>
               <Link to='/receipt' onClick={handleMenuItemClick}>
                 <FaReceipt className='nav-icon' />
                 <span className='nav-text'>Bill Receipt</span>
                 
               </Link>
-            </li>
-              <li className={location.pathname === '/settings' ? 'active' : ''}>
-              <Link to='/settings' onClick={handleMenuItemClick}>
+            </li> */}
+              <li className={location.pathname.includes("/dashboard/settings") ? "active" : ""}>
+              <Link to='/dashboard/settings' onClick={handleMenuItemClick}>
                 <FaCog className='nav-icon' />
                 <span className='nav-text'>Settings</span>
                 
@@ -181,21 +185,22 @@ const Dashboard = () => {
       <main className={`main-content ${!isSidebarOpen ? 'expanded' : ''}`}>
         <div className='content-wrapper'>
           <Routes>
-            <Route path='/' element={<MainContent />} />
-            <Route path='/login' element={<LoginForm />} />
-            <Route path='/inventory' element={<Inventory />} />
-            <Route path='/sales' element={<Sales />} />
-            <Route path='/customers' element={<Customer />} />
-            <Route path='/product' element={<Product />} />
-            <Route path='/purchasing' element={<Purchasing />} />
-            <Route path='/receipt' element={<Receipt />} />
-            <Route path='/settings' element={<Settings />} />
-            <Route path="/hardware" element={<Hardware />} />
-            <Route path="/pesticide" element={<Pesticide />} />
-            <Route path="/suppliers" element={<Suppliers />} />
-            <Route path='/billing' element={<Billing />} />
+  <Route index element={<MainContent />} />
+  <Route path="inventory" element={<Inventory />} />
+  <Route path="sales" element={<Sales />} />
+  <Route path="customers" element={<Customer />} />
+  <Route path="product" element={<Product />} />
+  <Route path="purchasing" element={<Purchasing />} />
+  <Route path="settings" element={<Settings />} />
+  <Route path="hardware" element={<Hardware />} />
+  <Route path="pesticide" element={<Pesticide />} />
+  <Route path="suppliers" element={<Suppliers />} />
+  <Route path="billing" element={<Billing />} />
+</Routes>
 
-          </Routes>
+
+
+          
         </div>
         
       </main>

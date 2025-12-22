@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const API_BASE = "http://172.28.253.143:5000/api/suppliers";
-// const token =
-  // localStorage.getItem("authToken") ||
-  // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MDMxNjI1NzAwMGY3MmEyN2Q0OWJkYiIsInJvbGUiOiJzdXBlcmFkbWluIiwiaWF0IjoxNzYzNzk4NTQyLCJleHAiOjE3NjM4ODQ5NDJ9.2pEp3GT5zvSVBW7c-Ua3pvp70CWTxodb9OVX9l0L-dY";
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/suppliers`;
 
 export default function Suppliers() {
   const [suppliers, setSuppliers] = useState([]);
@@ -11,7 +8,6 @@ export default function Suppliers() {
   const [loading, setLoading] = useState(false);
 
   const [search, setSearch] = useState("");
-
   const [showModal, setShowModal] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState(null);
 
@@ -26,57 +22,72 @@ export default function Suppliers() {
     fetchSuppliers();
   }, []);
 
+  // 🔑 AUTH HEADER
+  const getAuthHeader = () => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      alert("Please login again");
+      throw new Error("No token");
+    }
+    return {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+  };
+
+  // 📦 FETCH SUPPLIERS
   const fetchSuppliers = async () => {
     setLoading(true);
     try {
-      const response = await fetch(API_BASE, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        }
+      const res = await fetch(API_BASE, {
+        headers: getAuthHeader(),
       });
 
-      const data = await response.json();
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to fetch suppliers");
+      }
+
+      const data = await res.json();
       const list = Array.isArray(data) ? data : data.data || [];
 
       setSuppliers(list);
       setFiltered(list);
     } catch (err) {
-      console.error("Error loading suppliers:", err);
+      console.error(err);
+      alert(err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  
+  // 🔍 SEARCH
   const handleSearch = () => {
     const keyword = search.toLowerCase();
     const results = suppliers.filter(
       (s) =>
-        s.name.toLowerCase().includes(keyword) ||
-        s.email.toLowerCase().includes(keyword) ||
-        s.phone.toLowerCase().includes(keyword)
+        s.name?.toLowerCase().includes(keyword) ||
+        s.email?.toLowerCase().includes(keyword) ||
+        s.phone?.toLowerCase().includes(keyword)
     );
     setFiltered(results);
   };
 
- 
+  // ➕ ADD MODAL
   const openAddModal = () => {
     setForm({ name: "", email: "", phone: "", address: "" });
     setEditingSupplier(null);
     setShowModal(true);
   };
 
+  // ✏️ EDIT MODAL
   const openEditModal = (supplier) => {
-    setForm({
-      name: supplier.name,
-      email: supplier.email,
-      phone: supplier.phone,
-      address: supplier.address
-    });
+    setForm(supplier);
     setEditingSupplier(supplier);
     setShowModal(true);
   };
 
+  // 💾 SAVE
   const saveSupplier = async () => {
     const method = editingSupplier ? "PUT" : "POST";
     const url = editingSupplier
@@ -84,111 +95,67 @@ export default function Suppliers() {
       : API_BASE;
 
     try {
-      await fetch(url, {
+      const res = await fetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(form)
+        headers: getAuthHeader(),
+        body: JSON.stringify(form),
       });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Save failed");
 
       setShowModal(false);
       fetchSuppliers();
     } catch (err) {
-      console.error("Error saving supplier:", err);
+      alert(err.message);
     }
   };
 
-  // Delete Supplier
+  // 🗑 DELETE
   const deleteSupplier = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this supplier?"))
-      return;
+    if (!window.confirm("Delete this supplier?")) return;
 
     try {
-      await fetch(`${API_BASE}/${id}`, {
+      const res = await fetch(`${API_BASE}/${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: getAuthHeader(),
       });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Delete failed");
 
       fetchSuppliers();
     } catch (err) {
-      console.error("Error deleting supplier:", err);
+      alert(err.message);
     }
   };
 
   return (
     <div style={{ padding: 20 }}>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h1>Supplier Management</h1>
-    </div>
+      <h1>Supplier Management</h1>
 
-      
-<div
-  style={{
-    margin: "15px 0",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-  }}
->
-  
-  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-    <input
-      type="text"
-      placeholder="Search Suppliers..."
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
-      style={{
-        width: "260px",
-        padding: 8,
-        border: "1px solid #ccc",
-        borderRadius: 4
-      }}
-    />
-    <button
-      onClick={handleSearch}
-      style={{
-        padding: "9px 14px",
-        background: "#2196f3",
-        color: "white",
-        border: "none",
-        borderRadius: 4,
-        cursor: "pointer"
-      }}
-    >
-      Search
-    </button>
-  </div>
+      <div style={{ display: "flex", justifyContent: "space-between", margin: "15px 0" }}>
+        <div>
+          <input
+            placeholder="Search suppliers..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ padding: 8 }}
+          />
+          <button onClick={handleSearch} style={{ marginLeft: 8 }}>
+            Search
+          </button>
+        </div>
 
-
-  <button
-    style={{
-      padding: "10px 18px",
-      background: "#4caf50",
-      color: "white",
-      border: "none",
-      borderRadius: 5,
-      cursor: "pointer",
-      marginLeft: "auto"
-    }}
-    onClick={openAddModal}
-  >
-    + Add Supplier
-  </button>
-</div>
-
+        <button onClick={openAddModal}>+ Add Supplier</button>
+      </div>
 
       {loading && <p>Loading...</p>}
 
-      
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <table width="100%" border="1">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>#</th>
             <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
@@ -196,32 +163,22 @@ export default function Suppliers() {
             <th>Actions</th>
           </tr>
         </thead>
-
         <tbody>
           {filtered.length === 0 ? (
             <tr>
-              <td colSpan="6" style={{ textAlign: "center" }}>
-                No Suppliers Found
-              </td>
+              <td colSpan="6" align="center">No Suppliers Found</td>
             </tr>
           ) : (
-            filtered.map((sup, idx) => (
-              <tr key={sup._id}>
-                <td>{idx + 1}</td>
-                <td>{sup.name}</td>
-                <td>{sup.email}</td>
-                <td>{sup.phone}</td>
-                <td>{sup.address}</td>
+            filtered.map((s, i) => (
+              <tr key={s._id}>
+                <td>{i + 1}</td>
+                <td>{s.name}</td>
+                <td>{s.email}</td>
+                <td>{s.phone}</td>
+                <td>{s.address}</td>
                 <td>
-                  <button
-                    style={{ marginRight: 8 }}
-                    onClick={() => openEditModal(sup)}
-                  >
-                    Edit
-                  </button>
-                  <button onClick={() => deleteSupplier(sup._id)}>
-                    Delete
-                  </button>
+                  <button onClick={() => openEditModal(s)}>Edit</button>
+                  <button onClick={() => deleteSupplier(s._id)}>Delete</button>
                 </td>
               </tr>
             ))
@@ -229,90 +186,27 @@ export default function Suppliers() {
         </tbody>
       </table>
 
-      
+      {/* MODAL */}
       {showModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          <div
-            style={{
-              background: "#fff",
-              padding: 20,
-              width: 350,
-              borderRadius: 8
-            }}
-          >
+        <div style={{
+          position: "fixed", inset: 0, background: "rgba(0,0,0,.5)",
+          display: "flex", justifyContent: "center", alignItems: "center"
+        }}>
+          <div style={{ background: "#fff", padding: 20, width: 350 }}>
             <h3>{editingSupplier ? "Edit Supplier" : "Add Supplier"}</h3>
 
-            <input
-              type="text"
-              placeholder="Name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              style={{ width: "100%", padding: 8, marginBottom: 10 }}
-            />
+            {["name", "email", "phone", "address"].map((f) => (
+              <input
+                key={f}
+                placeholder={f}
+                value={form[f]}
+                onChange={(e) => setForm({ ...form, [f]: e.target.value })}
+                style={{ width: "100%", marginBottom: 8 }}
+              />
+            ))}
 
-            <input
-              type="email"
-              placeholder="Email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              style={{ width: "100%", padding: 8, marginBottom: 10 }}
-            />
-
-            <input
-              type="text"
-              placeholder="Phone"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              style={{ width: "100%", padding: 8, marginBottom: 10 }}
-            />
-
-            <textarea
-              placeholder="Address"
-              value={form.address}
-              onChange={(e) => setForm({ ...form, address: e.target.value })}
-              style={{ width: "100%", padding: 8, marginBottom: 10 }}
-            />
-
-            <button
-              style={{
-                width: "100%",
-                background: "#2196f3",
-                color: "white",
-                padding: 10,
-                border: "none",
-                borderRadius: 5,
-                marginBottom: 10
-              }}
-              onClick={saveSupplier}
-            >
-              Save
-            </button>
-
-            <button
-              style={{
-                width: "100%",
-                background: "gray",
-                color: "white",
-                padding: 10,
-                border: "none",
-                borderRadius: 5
-              }}
-              onClick={() => setShowModal(false)}
-            >
-              Cancel
-            </button>
+            <button onClick={saveSupplier}>Save</button>
+            <button onClick={() => setShowModal(false)}>Cancel</button>
           </div>
         </div>
       )}

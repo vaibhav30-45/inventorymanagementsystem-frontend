@@ -1,46 +1,89 @@
 import React from "react";
 import "../styles/Receipt.css";
 
-function Receipt({ billData }) {
+function Receipt({ billData, onClose }) {
   if (!billData) {
     return <p>No bill data available.</p>;
   }
 
+  const {
+    customerName,
+    items,
+    subtotal,
+    discount,
+    gst,
+    total,
+    paymentType,
+  } = billData;
+
   return (
     <div className="receipt-container">
-      <h2>Bill Receipt</h2>
-
-      <div className="receipt-details">
-        <p><strong>Customer:</strong> {billData.customerName}</p>
-        <p><strong>Date:</strong> {billData.date}</p>
-        <p><strong>Bill No:</strong> {billData.billNo}</p>
+      {/* Buttons (hidden in print) */}
+      <div className="no-print receipt-actions">
+        <button onClick={() => window.print()}>🖨 Print</button>
+        <button onClick={onClose}>Close</button>
       </div>
 
+      <h2 className="receipt-title">TAX INVOICE</h2>
+
+      {/* Header */}
+      <div className="receipt-details">
+        <p><strong>Customer:</strong> {customerName || "Walk-in Customer"}</p>
+        <p><strong>Date:</strong> {new Date().toLocaleString()}</p>
+        <p><strong>Invoice No:</strong> INV-{Date.now()}</p>
+        <p><strong>Payment:</strong> {paymentType}</p>
+      </div>
+
+      {/* Items Table */}
       <table className="receipt-table">
         <thead>
           <tr>
+            <th>SN</th>
             <th>Product</th>
             <th>Qty</th>
-            <th>Rate</th>
-            <th>Total</th>
+            <th>Rate (₹)</th>
+            <th>Total (₹)</th>
           </tr>
         </thead>
 
         <tbody>
-          {billData.items.map((item, index) => (
+          {items.map((item, index) => (
             <tr key={index}>
+              <td>{index + 1}</td>
               <td>{item.name}</td>
-              <td>{item.qty}</td>
-              <td>{item.rate}</td>
-              <td>{item.qty * item.rate}</td>
+              <td>{item.quantity}</td>
+              <td>{item.price}</td>
+              <td>{item.quantity * item.price}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <h3 className="receipt-total">
-        Grand Total: ₹{billData.items.reduce((acc, item) => acc + item.qty * item.rate, 0)}
-      </h3>
+      {/* Summary */}
+      <div className="receipt-summary">
+        <p>Subtotal: ₹{subtotal}</p>
+        <p>Discount: {discount}%</p>
+        <p>GST: ₹{gst}</p>
+        <h3>Grand Total: ₹{total}</h3>
+      </div>
+
+      <p className="receipt-footer">
+        ** This is a computer-generated receipt **
+      </p>
+
+      {/* Print Styles */}
+      <style>
+        {`
+        @media print {
+          .no-print {
+            display: none;
+          }
+          body {
+            background: white;
+          }
+        }
+        `}
+      </style>
     </div>
   );
 }

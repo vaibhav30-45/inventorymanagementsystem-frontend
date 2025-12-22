@@ -1,0 +1,129 @@
+/* ===== BILLING PAGE ===== */
+
+body {
+  background: #f4f6f9;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+.billing-container {
+  max-width: 1200px;
+  margin: auto;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Headings */
+.billing-container h1,
+.billing-container h2,
+.billing-container h3 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Simple clean search */
+input[name="search"] {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  background: #ccc;
+}
+
+input[name="search"]:focus {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  
+}
+
+/* With search icon *
+
+
+/* Buttons */
+.billing-container button {
+  padding: 8px 14px;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.billing-container button:hover {
+  background: #125aa3;
+}
+
+.billing-container button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+/* Tables */
+.billing-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.billing-container th {
+  background: #1976d2;
+  color: #fff;
+  padding: 10px;
+  text-align: left;
+}
+
+.billing-container td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.billing-container tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+/* Cart remove button */
+.billing-container td button {
+  background: #e53935;
+}
+
+.billing-container td button:hover {
+  background: #b71c1c;
+}
+
+/* Summary */
+.billing-summary {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f1f5fb;
+  border-radius: 6px;
+}
+
+.billing-summary p,
+.billing-summary h2 {
+  margin: 6px 0;
+}
+
+/* Payment section */
+.payment-section {
+  margin-top: 20px;
+}
+
+/* Generate invoice */
+.generate-btn {
+  margin-top: 25px;
+  background: #2e7d32;
+  font-size: 16px;
+}
+
+.generate-btn:hover {
+  background: #1b5e20;
+}
