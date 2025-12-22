@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
-
-const API_BASE = "http://172.28.253.143:5000/api/products";
-// const token =
-//   localStorage.getItem("authToken") ||
-//   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MDMxNjI1NzAwMGY3MmEyN2Q0OWJkYiIsInJvbGUiOiJzdXBlcmFkbWluIiwiaWF0IjoxNzYzNzk4NTQyLCJleHAiOjE3NjM4ODQ5NDJ9.2pEp3GT5zvSVBW7c-Ua3pvp70CWTxodb9OVX9l0L-dY";
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/products`;
 
 export default function Hardware() {
   const [hardware, setHardware] = useState([]);
+  const [allHardware, setAllHardware] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [allHardware, setAllHardware] = useState([]);
 
   useEffect(() => {
     fetchHardware();
@@ -18,34 +14,47 @@ export default function Hardware() {
   const fetchHardware = async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Please login again");
+        return;
+      }
+
       const response = await fetch(API_BASE, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      const data = await response.json();
-      const items = Array.isArray(data) ? data : data.data || [];
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || "Failed to fetch hardware");
+      }
 
-      const filtered = items.filter(
+      const data = await response.json();
+
+      // filter only hardware from MongoDB
+      const filtered = data.filter(
         (item) => item.category?.toLowerCase() === "hardware"
       );
 
       setHardware(filtered);
-      setAllHardware(filtered); // Save master list
+      setAllHardware(filtered);
     } catch (err) {
-      console.error("Error loading hardware:", err);
+      console.error("Error loading hardware:", err.message);
+      alert(err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
- 
+  // 🔍 Search
   const handleSearch = () => {
     const text = searchText.trim().toLowerCase();
-
-    if (text === "") {
-      setHardware(allHardware); 
+    if (!text) {
+      setHardware(allHardware);
       return;
     }
 
@@ -58,13 +67,12 @@ export default function Hardware() {
     setHardware(filtered);
   };
 
-  
   const handleKeyPress = (e) => {
     if (e.key === "Enter") handleSearch();
   };
 
   const renderRows = () => {
-    if (!hardware.length)
+    if (!hardware.length) {
       return (
         <tr>
           <td colSpan="8" style={{ textAlign: "center" }}>
@@ -72,6 +80,7 @@ export default function Hardware() {
           </td>
         </tr>
       );
+    }
 
     return hardware.map((item, idx) => (
       <tr key={item._id}>
@@ -101,26 +110,9 @@ export default function Hardware() {
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
           onKeyPress={handleKeyPress}
-          style={{
-            padding: "8px",
-            width: "250px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
+          style={{ padding: 8, backgroundColor: "#ccc",width: 250 }}
         />
-        <button
-          onClick={handleSearch}
-          style={{
-            padding: "8px 15px",
-            borderRadius: "5px",
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          Search
-        </button>
+        <button onClick={handleSearch}>Search</button>
       </div>
 
       {loading && <p>Loading...</p>}

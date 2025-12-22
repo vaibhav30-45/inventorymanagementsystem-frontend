@@ -306,3 +306,10 @@ body {
     width: 100vw;
     color: black;
 }
+.overlay {
+  pointer-events: auto;
+}
+
+.sidebar:not(.open) + .overlay {
+  display: none;
+}
